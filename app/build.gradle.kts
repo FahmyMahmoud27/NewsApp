@@ -56,6 +56,11 @@ dependencies {
 
     val nav_version = "2.9.8"
     implementation("androidx.navigation:navigation-compose:${nav_version}")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.2.0")
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta09")
+
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
