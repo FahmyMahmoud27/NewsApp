@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -38,6 +41,7 @@ import com.route.news.api.model.ArticleDM
 import com.route.news.api.model.ArticlesResponse
 import com.route.news.ui.composables.DefaultErrorMessage
 import com.route.news.ui.composables.DefaultLoadingView
+import com.route.news.ui.screens.home.NewsViewModel
 import com.route.news.ui.theme.Black
 import com.route.news.ui.theme.NewsTypography
 import com.route.news.ui.theme.Transparent
@@ -48,39 +52,14 @@ import retrofit2.Response
 
 @Composable
 fun ArticlesList(source: String) {
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var articles by remember { mutableStateOf<List<ArticleDM>?>(null) }
+
+    val viewModel = viewModel<NewsViewModel>()
+    val isLoading = viewModel.isLoading.observeAsState()
+    val errorMessage = viewModel.errorMessage.observeAsState()
+    val articles = viewModel.articles.observeAsState()
 
     DisposableEffect(source) {
-        isLoading = true
-        errorMessage = null
-
-        ApiManager.getWebServices().getArticles(source = source)
-            .enqueue(object : Callback<ArticlesResponse> {
-                override fun onResponse(
-                    call: Call<ArticlesResponse?>,
-                    response: Response<ArticlesResponse?>
-                ) {
-                    isLoading = false
-                    if (response.isSuccessful) {
-                        articles = response.body()!!.articles
-                    } else {
-                        errorMessage = response.message()
-                    }
-                }
-
-                override fun onFailure(
-                    call: Call<ArticlesResponse?>,
-                    t: Throwable
-                ) {
-                    isLoading = false
-                    errorMessage = t.message ?: "Something Went Wrong Please Try Again Later"
-
-                }
-
-            })
-
+        viewModel.getArticles(source)
         onDispose { }
     }
 
@@ -88,21 +67,21 @@ fun ArticlesList(source: String) {
 
 
     LazyColumn {
-        if (isLoading) {
+        if (isLoading.value!!) {
             item {
                 DefaultLoadingView()
             }
         }
-        if (errorMessage?.isNotEmpty() == true) {
+        if (errorMessage.value?.isNotEmpty() == true) {
             item {
-                DefaultErrorMessage(errorMessage!!) {
+                DefaultErrorMessage(errorMessage.value!!) {
 
                 }
             }
 
         }
-        if (!articles.isNullOrEmpty()) {
-            items(articles!!) { article ->
+        if (!articles.value.isNullOrEmpty()) {
+            items(articles.value!!) { article ->
                 ArticleItem(article)
             }
         }

@@ -18,6 +18,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,12 +28,15 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.route.news.api.ApiManager
 import com.route.news.api.model.SourceDM
 import com.route.news.api.model.SourcesResponse
 import com.route.news.ui.composables.DefaultErrorMessage
 import com.route.news.ui.composables.DefaultLoadingView
 import com.route.news.ui.model.Category
+import com.route.news.ui.screens.home.NewsViewModel
 import com.route.news.ui.theme.Black
 import com.route.news.ui.theme.NewsTypography
 import retrofit2.Call
@@ -42,53 +46,30 @@ import java.util.Collections.list
 
 @Composable
 fun NewsTab(category: Category) {
-    var tabs by remember { mutableStateOf<List<SourceDM>?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
     var selectedTabIndex by remember { mutableStateOf(0) }
+
+    var viewModel = viewModel<NewsViewModel>()
+    var isLoading = viewModel.isLoading.observeAsState()
+    var errorMessage = viewModel.errorMessage.observeAsState()
+    var tabs = viewModel.tabs.observeAsState()
+
 
     ///Side Effect
     DisposableEffect(Unit) {
-        isLoading = true
-        ApiManager.getWebServices().getSources(category = category.title)
-            .enqueue(object : Callback<SourcesResponse> {
-                override fun onResponse(
-                    call: Call<SourcesResponse?>,
-                    response: Response<SourcesResponse?>
-                ) {
-                    isLoading = false
-                    Log.e("getSources - onResponse", "code = ${response.code()}")
-                    if (response.isSuccessful) {
-                        tabs = response.body()!!.sources
-                    } else {
-                        errorMessage = response.message()
-                    }
-                    Log.e("getSources - onResponse", "body = ${response.body()}")
-                }
-
-                override fun onFailure(
-                    call: Call<SourcesResponse?>,
-                    t: Throwable
-                ) {
-                    isLoading = false
-                    Log.e("getSources - onFailure", "code = ${t.message}")
-                    errorMessage = t.message ?: "Something Went Wrong Please Try Again Later"
-                }
-
-            })
+        viewModel.getSources(category.title)
         onDispose {}
     }
 
 
-
+//15    /// 34
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (isLoading) {
+        if (isLoading.value == true) {
             DefaultLoadingView()
         }
-        if (!tabs.isNullOrEmpty()) {
+        if (!tabs.value.isNullOrEmpty()) {
             ScrollableTabRow(
                 selectedTabIndex = selectedTabIndex,
                 containerColor = Black,
@@ -101,7 +82,7 @@ fun NewsTab(category: Category) {
                     )
                 }, divider = {}
             ) {
-                for (i in 0 until (tabs?.size ?: -1)) {
+                for (i in 0 until (tabs.value?.size ?: -1)) {
                     var isSelected = selectedTabIndex == i
                     Tab(
                         selected = selectedTabIndex == 1,
@@ -110,23 +91,23 @@ fun NewsTab(category: Category) {
                         }, modifier = Modifier.padding(8.dp)
                     ) {
                         Text(
-                            text = tabs!![i].name ?: "",
+                            text = tabs.value!![i].name ?: "",
                             style = if (isSelected) NewsTypography.bodyMedium else NewsTypography.bodySmall
                         )
                     }
 
                 }
             }
-            ArticlesList(source = tabs!![selectedTabIndex].id?:"")
+            ArticlesList(source = tabs.value!![selectedTabIndex].id ?: "")
         }
 
-        if (errorMessage?.isNotEmpty() == true) {
-            DefaultErrorMessage(errorMessage!!) {
+        if (errorMessage.value?.isNotEmpty() == true) {
+            DefaultErrorMessage(errorMessage.value!!) {
 
-            }
             }
         }
     }
+}
 
 
 

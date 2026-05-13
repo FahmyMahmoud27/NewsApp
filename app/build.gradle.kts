@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.compose.runtime.livedata)
     testImplementation(libs.junit)
 
     val nav_version = "2.9.8"
@@ -60,7 +61,11 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("io.coil-kt.coil3:coil-compose:3.2.0")
     implementation("com.github.bumptech.glide:compose:1.0.0-beta09")
-
+    val lifecycle_version = "2.10.0"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${lifecycle_version}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${lifecycle_version}")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${lifecycle_version}")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:${lifecycle_version}")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
