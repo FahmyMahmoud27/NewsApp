@@ -1,61 +1,45 @@
 package com.route.news.ui.screens.home.composables.News
 
-import android.content.ClipData
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.style.Style
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.route.news.R
-import com.route.news.api.ApiManager
-import com.route.news.api.model.ArticleDM
-import com.route.news.api.model.ArticlesResponse
+import com.route.news.data.api.model.ArticleDM
 import com.route.news.ui.composables.DefaultErrorMessage
 import com.route.news.ui.composables.DefaultLoadingView
 import com.route.news.ui.screens.home.NewsViewModel
 import com.route.news.ui.theme.Black
 import com.route.news.ui.theme.NewsTypography
-import com.route.news.ui.theme.Transparent
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 @Composable
 fun ArticlesList(source: String) {
 
     val viewModel = viewModel<NewsViewModel>()
-    val isLoading = viewModel.isLoading.observeAsState()
-    val errorMessage = viewModel.errorMessage.observeAsState()
+    val isLoading = viewModel.isLoadingArticles.observeAsState()
+    val errorMessage = viewModel.articlesErrorMessage.observeAsState()
     val articles = viewModel.articles.observeAsState()
 
     DisposableEffect(source) {
@@ -80,10 +64,23 @@ fun ArticlesList(source: String) {
             }
 
         }
-        if (!articles.value.isNullOrEmpty()) {
-            items(articles.value!!) { article ->
-                ArticleItem(article)
+        if (articles.value != null) {
+            if (articles.value!!.isNotEmpty()) {
+                items(articles.value!!) { article ->
+                    ArticleItem(article)
+                }
+            } else {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+                        Text("No articles in this source")
+                    }
+                }
             }
+
+
         }
     }
 }

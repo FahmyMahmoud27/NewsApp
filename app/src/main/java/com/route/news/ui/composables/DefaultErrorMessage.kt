@@ -10,6 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
+import com.route.news.ui.theme.White
 
 
 @Composable
@@ -20,7 +23,7 @@ fun DefaultErrorMessage(message: String, onRetry: () -> Unit) {
         verticalArrangement = Arrangement.Center
 
     ) {
-        Text(message)
+        Text(message, style = TextStyle(color = White, fontSize = 18.sp))
         ElevatedButton(onClick = {
             onRetry()
         }) {
