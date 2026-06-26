@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.route.news.ui.composables.DefaultErrorMessage
 import com.route.news.ui.composables.DefaultLoadingView
@@ -32,7 +33,7 @@ import com.route.news.ui.theme.NewsTypography
 fun NewsTab(category: Category) {
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    var viewModel = viewModel<NewsViewModel>()
+    val viewModel = hiltViewModel<NewsViewModel>()
     var isLoading = viewModel.isLoading.observeAsState()
     var errorMessage = viewModel.errorMessage.observeAsState()
     var tabs = viewModel.tabs.observeAsState()

@@ -16,4 +16,6 @@ interface SourcesDao {
 
     @Query("select * from SourceDM where category = :category")
    suspend fun getSources(category: String): List<SourceDM>
+    @Query("select * from SourceDM")
+   suspend fun getAllSources(): List<SourceDM>
 }

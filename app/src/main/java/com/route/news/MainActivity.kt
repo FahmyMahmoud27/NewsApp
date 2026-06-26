@@ -14,7 +14,9 @@ import com.route.news.ui.screens.splash.SplashScreen
 import com.route.news.ui.theme.NewsTheme
 import com.route.news.ui.utils.HomeRoute
 import com.route.news.ui.utils.SplashRoute
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
