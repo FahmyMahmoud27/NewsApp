@@ -1,6 +1,7 @@
 package com.route.news.ui.screens.home
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +43,16 @@ fun HomeScreen(navController: NavController) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
+
+    BackHandler(enabled = drawerState.isOpen || selectedCategory != null) {
+        if (drawerState.isOpen) {
+            scope.launch {
+                drawerState.close()
+            }
+        } else {
+            selectedCategory = null
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,

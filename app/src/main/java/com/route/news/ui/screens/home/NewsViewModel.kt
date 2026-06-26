@@ -10,6 +10,7 @@ import com.route.news.data.api.model.SourceDM
 import com.route.news.data.repositories.news_repository.NewsRepositoryImp
 import com.route.news.data.repositories.news_repository.data_sources.news_local_data_source.NewsLocalDataSourceImp
 import com.route.news.data.repositories.news_repository.data_sources.news_remote_data_source.NewsRemoteDataSourceImp
+import com.route.news.domain.model.Source
 import com.route.news.domain.repository.NewsRepository
 import com.route.news.domain.usecase.GetSourcesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 class NewsViewModel @Inject constructor(val getSourcesUseCase: GetSourcesUseCase) : ViewModel() {
 
 
-    var tabs: MutableLiveData<List<SourceDM>?> = MutableLiveData(null)
+    var tabs: MutableLiveData<List<Source>?> = MutableLiveData(null)
     var isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     var isLoadingArticles: MutableLiveData<Boolean> = MutableLiveData(false)
     var errorMessage: MutableLiveData<String?> = MutableLiveData(null)
