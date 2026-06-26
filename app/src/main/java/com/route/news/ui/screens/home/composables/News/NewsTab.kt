@@ -99,7 +99,7 @@ fun NewsTab(category: Category) {
 
         if (errorMessage.value?.isNotEmpty() == true) {
             DefaultErrorMessage(errorMessage.value!!) {
-
+                viewModel.getSources(category.title)
             }
         }
     }
